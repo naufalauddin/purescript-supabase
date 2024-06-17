@@ -20,6 +20,7 @@ import React.Basic.Hooks (Hook, unsafeHook)
 import Record.Studio (mapRecordKind)
 import Supabase.Supabase as Supabase
 import Supabase.Types (Client)
+import Type.Function (type ($))
 import Yoga.JSON as YogaJSON
 import Yoga.JSON (class WriteForeign)
 
