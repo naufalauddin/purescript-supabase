@@ -31,7 +31,10 @@ useUser = unsafeHook useUserImpl <#> mapRecordKind Nullable.toMaybe
 
 foreign import data UseUser :: Type -> Type
 
-foreign import createBrowserClient :: Effect Client
+foreign import createBrowserClientInternal :: Fn2 String String $ Effect Client
+
+createBrowserClient :: String -> String -> Effect Client
+createBrowserClient = runFn2 createBrowserClientInternal
 
 type CookieOptions =
   { domain :: Maybe String
