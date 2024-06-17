@@ -10,6 +10,7 @@ module Supabase.AuthHelpers
 
 import Prelude
 
+import Data.Function.Curried (Fn3, runFn3)
 import Data.Maybe (Maybe)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
@@ -47,12 +48,10 @@ type Options =
 type ClientOptions r =
   { cookieOptions :: Maybe CookieOptions
   , options :: Maybe Options
-  , supabaseKey :: Maybe String
-  , supabaseUrl :: Maybe String
   | r
   }
 
-foreign import createBrowserClientWithOptionsInternal :: Foreign -> Effect Client
+foreign import createBrowserClientWithOptionsInternal :: Fn3 String String Foreign $ Effect Client
 
-createBrowserClientWithOptions ∷ forall r. WriteForeign (ClientOptions r) => ClientOptions r → Effect Client
-createBrowserClientWithOptions = YogaJSON.write >>> createBrowserClientWithOptionsInternal
+createBrowserClientWithOptions ∷ forall r. WriteForeign (ClientOptions r) => String -> String -> ClientOptions r → Effect Client
+createBrowserClientWithOptions supabaseUrl supabaseKey = YogaJSON.write >>> (runFn3 createBrowserClientWithOptionsInternal) supabaseUrl supabaseKey

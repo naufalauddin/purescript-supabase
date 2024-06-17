@@ -7,5 +7,5 @@ export const useUserImpl = useUser;
 
 export const createBrowserClient = () => createBrowserSupabaseClient();
 
-export const createBrowserClientWithOptionsInternal = (options) => () =>
-  createBrowserSupabaseClient(options);
+export const createBrowserClientWithOptionsInternal = (url, key, options) => () =>
+  createBrowserSupabaseClient(url, key, options);
