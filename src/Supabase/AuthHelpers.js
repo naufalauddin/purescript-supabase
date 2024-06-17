@@ -1,6 +1,6 @@
 'use client'
 import { useUser } from "@supabase/auth-helpers-react";
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient as createBrowserSupabaseClient } from "@supabase/ssr";
 
 export const useUserImpl = useUser;
 
