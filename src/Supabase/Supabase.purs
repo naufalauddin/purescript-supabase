@@ -169,8 +169,8 @@ signUpWithEmail :: Client -> String -> String -> Aff (Either Error User)
 signUpWithEmail client email password = do
   res <- runEffectFn2 (signUpWithEmailImpl client) email password # Promise.toAffE
   case Nullable.toMaybe res.data, Nullable.toMaybe res.error of
-    Just user, _ -> pure $ Right user
     _, Just error -> pure $ Left error
+    Just user, _ -> pure $ Right user
     _, _ -> pure $ Left (error "Unexpected response error")
 
 foreign import signInWithOtpImpl :: Client -> String -> Effect (Promise InternalAuthResponse)
@@ -238,6 +238,6 @@ getUser :: Client -> Aff (Either Error User)
 getUser client = do
   res <- getUserImpl client # Promise.toAffE
   case Nullable.toMaybe res.data, Nullable.toMaybe res.error of
-    Just user, _ -> pure $ Right user
     _, Just error -> pure $ Left error
+    Just user, _ -> pure $ Right user
     _, _ -> pure $ Left (error "Unexpected response error")
