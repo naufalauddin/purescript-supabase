@@ -1,0 +1,40 @@
+package:
+  name: supabase
+  dependencies:
+    - console
+    - effect
+    - prelude
+    - aff
+    - aff-promise
+    - console
+    - datetime
+    - effect
+    - either
+    - exceptions
+    - fetch
+    - fetch-core
+    - foldable-traversable
+    - foreign
+    - functions
+    - lists
+    - maybe
+    - nullable
+    - prelude
+    - react-basic-hooks
+    - record
+    - record-studio
+    - transformers
+    - tuples
+    - typelevel-prelude
+    - unsafe-coerce
+    - unsafe-reference
+    - untagged-union
+    - web-file
+    - yoga-json
+  test:
+    main: Test.Main
+    dependencies: []
+workspace:
+  packageSet:
+    registry: 43.3.0
+  extraPackages: {}
