@@ -163,10 +163,15 @@ type InternalAuthResponse = { error :: Nullable Error }
 
 type AuthResponse = { error :: Maybe Error }
 
-foreign import signUpWithEmailImpl :: Client -> EffectFn2 String String (Promise InternalAuthResponse)
+foreign import signUpWithEmailImpl :: Client -> EffectFn2 String String (Promise { data :: Nullable User, error :: Nullable Error })
 
-signUpWithEmail :: Client -> String -> String -> Aff AuthResponse
-signUpWithEmail client email password = runEffectFn2 (signUpWithEmailImpl client) email password # Promise.toAffE <#>  \{ error } -> { error: Nullable.toMaybe error }
+signUpWithEmail :: Client -> String -> String -> Aff (Either Error User)
+signUpWithEmail client email password = do
+  res <- runEffectFn2 (signUpWithEmailImpl client) email password # Promise.toAffE
+  case Nullable.toMaybe res.data, Nullable.toMaybe res.error of
+    Just user, _ -> pure $ Right user
+    _, Just error -> pure $ Left error
+    _, _ -> pure $ Left (error "Unexpected response error")
 
 foreign import signInWithOtpImpl :: Client -> String -> Effect (Promise InternalAuthResponse)
 
