@@ -1,5 +1,8 @@
 export const signUpWithEmailImpl = (supabase) => (email, password) =>
-  supabase.auth.signUp({email, password});
+  supabase.auth.signUp({email, password})
+
+export const signInWithPasswordImpl = (supabase) => (email, password) =>
+  supabase.auth.signInWithPassword({email, password})
 
 export const signInWithOtpImpl = (supabase) => (email) => () =>
   supabase.auth.signInWithOtp({ email });

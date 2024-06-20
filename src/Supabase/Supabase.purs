@@ -31,6 +31,7 @@ module Supabase.Supabase
   , select
   , getUser
   , signUpWithEmail
+  , signInWithPassword
   , signInWithOtp
   , signInWithOtpOptions
   , signOut
@@ -163,14 +164,24 @@ type InternalAuthResponse = { error :: Nullable Error }
 
 type AuthResponse = { error :: Maybe Error }
 
-foreign import signUpWithEmailImpl :: Client -> EffectFn2 String String (Promise { data :: Nullable User, error :: Nullable Error })
+foreign import signUpWithEmailImpl :: Client -> EffectFn2 String String (Promise { data :: Nullable Session, error :: Nullable Error })
 
 signUpWithEmail :: Client -> String -> String -> Aff (Either Error User)
 signUpWithEmail client email password = do
   res <- runEffectFn2 (signUpWithEmailImpl client) email password # Promise.toAffE
   case Nullable.toMaybe res.data, Nullable.toMaybe res.error of
     _, Just error -> pure $ Left error
-    Just user, _ -> pure $ Right user
+    Just session, _ -> pure $ Right session.user
+    _, _ -> pure $ Left (error "Unexpected response error")
+
+foreign import signInWithPasswordImpl :: Client -> EffectFn2 String String (Promise { data :: Nullable Session, error :: Nullable Error })
+
+signInWithPassword :: Client -> String -> String -> Aff (Either Error User)
+signInWithPassword client email password = do
+  res <- runEffectFn2 (signInWithPasswordImpl client) email password # Promise.toAffE
+  case Nullable.toMaybe res.data, Nullable.toMaybe res.error of
+    _, Just error -> pure $ Left error
+    Just session, _ -> pure $ Right session.user
     _, _ -> pure $ Left (error "Unexpected response error")
 
 foreign import signInWithOtpImpl :: Client -> String -> Effect (Promise InternalAuthResponse)
@@ -232,12 +243,12 @@ invoke client fn body headers = runFn3 (invokeImpl client) fn body headers # Pro
 
 foreign import channel :: ChannelName -> Client -> Effect Channel
 
-foreign import getUserImpl :: Client -> Effect (Promise { data :: Nullable User, error :: Nullable Error })
+foreign import getUserImpl :: Client -> Effect (Promise { data :: Nullable Session, error :: Nullable Error })
 
 getUser :: Client -> Aff (Either Error User)
 getUser client = do
   res <- getUserImpl client # Promise.toAffE
   case Nullable.toMaybe res.data, Nullable.toMaybe res.error of
     _, Just error -> pure $ Left error
-    Just user, _ -> pure $ Right user
+    Just session, _ -> pure $ Right session.user
     _, _ -> pure $ Left (error "Unexpected response error")
